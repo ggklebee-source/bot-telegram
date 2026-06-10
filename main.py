@@ -2,7 +2,7 @@ import os
 import requests
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 TELEGRAM_URL = "https://api.telegram.org/bot" + str(TELEGRAM_TOKEN)
 
 def get_updates(offset=None):
@@ -12,9 +12,10 @@ def get_updates(offset=None):
 def send_message(chat_id, text):
     requests.post(TELEGRAM_URL + "/sendMessage", data={"chat_id": chat_id, "text": text})
 
-def ask_claude(msg):
-    r = requests.post("https://api.anthropic.com/v1/messages", json={"model": "claude-sonnet-4-20250514", "max_tokens": 1000, "messages": [{"role": "user", "content": msg}]}, headers={"Content-Type": "application/json", "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01"})
-    return r.json()["content"][0]["text"]
+def ask_gemini(msg):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    r = requests.post(url, json={"contents": [{"parts": [{"text": msg}]}]})
+    return r.json()["candidates"][0]["content"]["parts"][0]["text"]
 
 offset = None
 print("Bot iniciado!")
@@ -26,7 +27,7 @@ while True:
         text = msg.get("text", "")
         if text and chat_id:
             try:
-                send_message(chat_id, ask_claude(text))
+                send_message(chat_id, ask_gemini(text))
             except Exception as e:
                 send_message(chat_id, "Erro!")
                 print(e)
