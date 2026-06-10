@@ -29,5 +29,5 @@ while True:
             try:
                 send_message(chat_id, ask_gemini(text))
             except Exception as e:
-                send_message(chat_id, "Erro!")
+                send_message(chat_id, str(e))
                 print(e)
