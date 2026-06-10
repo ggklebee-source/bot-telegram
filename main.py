@@ -13,7 +13,7 @@ def send_message(chat_id, text):
     requests.post(TELEGRAM_URL + "/sendMessage", data={"chat_id": chat_id, "text": str(text)[:4000]})
 
 def ask_gemini(msg):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
     r = requests.post(url, json={"contents": [{"parts": [{"text": msg}]}]})
     data = r.json()
     if "candidates" in data:
